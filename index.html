@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>like chat</title>
+  <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+  <div class="wrap-header">
+    <header>
+      <h2>Знайди собі анонімного співрозмовника!</h2>
+    </header>
+  </div>
+  <div class="content">
+    <div class="block">
+      <form name="publish">
+        <input type="text" name="message" placeholder="your message" maxlength="50" required>
+        <input type="submit" value="Send"/>
+      </form>    
+    </div>
+    <div class="block">
+      <div id="messages"></div>
+    </div>
+  </div>
+
+
+
+
+
+<script>
+let url = location.host == 'localhost' ?
+  'ws://localhost:8080/ws' : location.host == 'javascript.local' ?
+  `ws://javascript.local/article/websocket/chat/ws` : 
+  `wss://javascript.info/article/websocket/chat/ws`; 
+
+let socket = new WebSocket(url);
+
+// 
+document.forms.publish.onsubmit = function() {
+  let outgoingMessage = this.message.value;
+
+  socket.send(outgoingMessage);
+  return false;
+};
+
+//
+socket.onmessage = function(event) {
+  let incomingMessage = event.data;
+  showMessage(incomingMessage);
+};
+
+socket.onclose = event => console.log(`Closed ${event.code}`);
+
+//
+function showMessage(message) {
+  let messageElem = document.createElement('div');
+  messageElem.textContent = message;
+  document.getElementById('messages').prepend(messageElem);
+}
+</script>
+</body>
+</html>
